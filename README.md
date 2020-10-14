@@ -34,4 +34,4 @@ npm start
 
 ## Authors
 
-- **Sunday Destiny** - _Initial work_ - [mini-E-commerce](https://github.com/destinyjunior/node-commerce)
+- **Sunday Destiny** - [mini-E-commerce](https://github.com/destinyjunior/node-commerce)
