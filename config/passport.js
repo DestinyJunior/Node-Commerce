@@ -1,18 +1,24 @@
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
+var JwtStrategy = require('passport-jwt').Strategy;
+var ExtractJwt = require('passport-jwt').ExtractJwt;
+var User = require('../models/user');
+var config = require('../config/database');
 
-const Users = require('../models/Users');
-
-passport.use(new LocalStrategy({
-  usernameField: 'user[email]',
-  passwordField: 'user[password]',
-}, (email, password, done) => {
-  Users.findOne({ email })
-    .then((user) => {
-      if(!user || !user.validatePassword(password)) {
-        return done(null, false, { errors: { 'email or password': 'is invalid' } });
-      }
-
-      return done(null, user);
-    }).catch(done);
-}));
+module.exports = function (passport) {
+  var opts = {};
+  opts.jwtFromRequest = ExtractJwt.fromAuthHeaderWithScheme('jwt');
+  opts.secretOrKey = config.secret;
+  passport.use(
+    new JwtStrategy(opts, (jwt_payload, done) => {
+      User.findOne({ id: jwt_payload.id }, (err, user) => {
+        if (err) {
+          return done(err, false);
+        }
+        if (user) {
+          return done(null, user);
+        } else {
+          return done(null, false, { message: 'Invalid Credentials' });
+        }
+      });
+    })
+  );
+};

@@ -1,75 +1,52 @@
-const express = require('express');
-const path = require('path');
-const bodyParser = require('body-parser');
-const session = require('express-session');
-const cors = require('cors');
-const mongoose = require('mongoose');
-const errorHandler = require('errorhandler');
+var express = require('express');
+var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var jwt = require('jsonwebtoken');
 var passport = require('passport');
-
 var config = require('./config/database');
-// eslint-disable-next-line no-unused-vars
-const colors = require('colors');
+var mongoose = require('mongoose');
 
+var app = express();
 
-
-//Configure mongoose's promise to global promise
-mongoose.promise = global.Promise;
-
-//Configure isProduction variable
-const isProduction = process.env.NODE_ENV === 'production';
-
-//Initiate our app
-const app = express();
-
-//Configure our app
-app.use(cors());
-app.use(require('morgan')('dev'));
+//Use body-parser to get POST  requests for API Use
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
-// files folder
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'node-commerce', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
-
+//Log requests to console
+app.use(morgan('dev'));
 
 //Initialize passport for use
 app.use(passport.initialize());
 
-if(!isProduction) {
-  app.use(errorHandler());
-}
+// mongoose connection to database config file
+mongoose.connect(config.database, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+});
 
-//Configure Mongoose
+//Bring in passport strategy we just defined
+require('./config/passport')(passport);
 
+// controllers
+var helloRouter = require('./router/hello');
+var userRouter = require('./router/user');
+var productRouter = require('./router/product');
 
-const connectDB = async () => {
-  const conn = await mongoose.connect(config.database, {
-    useCreateIndex: true,
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true
-  });
-    
-  console.log(`MongoDB Connected : http://${conn.connection.host}`.cyan.underline.bold);
-};
-
-
-connectDB();
-
-mongoose.set('debug', true);
+// routes prefix
+app.use('/', helloRouter);
+app.use('/api/user/', userRouter);
+app.use('/api/product', productRouter);
 
 
-require('./config/passport');
-app.use(require('./routes'));
 
 // Handle 404 Requests
 app.use((req, res, next) => {
@@ -78,13 +55,9 @@ app.use((req, res, next) => {
   next(error);
 });
 
-const server = app.listen(4000, () => {
-  console.log('Server running on port localhost:4000/'.yellow.bold);
+//Home route
+app.get('/', (req, res) => {
+  res.send('Relax, we will put the home page here later');
 });
-// Handle unhandled promise rejections
-// eslint-disable-next-line no-unused-vars
-process.on('unhandledRejection', (err, promise) => {
-  console.log(`Error: ${err.message}`.red);
-  //Close server & process
-  server.close(() => process.exit(1));
-});
+
+module.exports = app;
