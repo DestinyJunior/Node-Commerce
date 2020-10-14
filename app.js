@@ -44,7 +44,7 @@ var productRouter = require('./router/product');
 // routes prefix
 
 app.use('/api/user/', userRouter);
-app.use('/api/product', productRouter);
+app.use('/api/products', productRouter);
 
 
 

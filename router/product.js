@@ -2,7 +2,7 @@ var passport = require('passport');
 var express = require('express');
 
 // controllers
-var productController = require('../controllers/productController');
+const {createProduct, getProducts, updateProducts, showProduct, deleteProduct} = require('../controllers/productController');
 
 // initialize api group
 var productRequests = express.Router();
@@ -11,7 +11,33 @@ var productRequests = express.Router();
 productRequests.post(
   '/',
   passport.authenticate('jwt', { session: false }),
-  productController.createProduct
+  createProduct
+);
+
+// get products
+productRequests.get(
+  '/',
+  getProducts
+);
+
+// update product
+productRequests.put(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  updateProducts
+);
+
+// show product
+productRequests.get(
+  '/:id',
+  showProduct
+);
+
+// delete product
+productRequests.delete(
+  '/:id',
+  passport.authenticate('jwt', { session: false }),
+  deleteProduct
 );
 
 
