@@ -5,7 +5,12 @@ const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
+var passport = require('passport');
+
 var config = require('./config/database');
+// eslint-disable-next-line no-unused-vars
+const colors = require('colors');
+
 
 
 //Configure mongoose's promise to global promise
@@ -33,46 +38,53 @@ app.use(function(req, res, next) {
 
 // files folder
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'node-commerce', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
+
+
+//Initialize passport for use
+app.use(passport.initialize());
 
 if(!isProduction) {
   app.use(errorHandler());
 }
 
 //Configure Mongoose
-mongoose.connect(config.database);
+
+
+const connectDB = async () => {
+  const conn = await mongoose.connect(config.database, {
+    useCreateIndex: true,
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true
+  });
+    
+  console.log(`MongoDB Connected : http://${conn.connection.host}`.cyan.underline.bold);
+};
+
+
+connectDB();
+
 mongoose.set('debug', true);
 
-//Models & routes
-require('./models/Users');
-require('./models/Products');
 
 require('./config/passport');
 app.use(require('./routes'));
 
-//Error handlers & middlewares
-if(!isProduction) {
-  app.use((err, req, res) => {
-    res.status(err.status || 500);
-
-    res.json({
-      errors: {
-        message: err.message,
-        error: err,
-      },
-    });
-  });
-}
-
-app.use((err, req, res) => {
-  res.status(err.status || 500);
-
-  res.json({
-    errors: {
-      message: err.message,
-      error: {},
-    },
-  });
+// Handle 404 Requests
+app.use((req, res, next) => {
+  const error = new Error('Route Not found');
+  error.status = 404;
+  next(error);
 });
 
-app.listen(4000, () => console.log('Server running on http://localhost:4000/'));
+const server = app.listen(4000, () => {
+  console.log('Server running on port localhost:4000/'.yellow.bold);
+});
+// Handle unhandled promise rejections
+// eslint-disable-next-line no-unused-vars
+process.on('unhandledRejection', (err, promise) => {
+  console.log(`Error: ${err.message}`.red);
+  //Close server & process
+  server.close(() => process.exit(1));
+});

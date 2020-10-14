@@ -5,11 +5,12 @@ const router = require('express').Router();
 const auth = require('../auth');
 const Users = mongoose.model('Users');
 
-//refister new user route (optional, everyone has access)
+//register new user route (optional, everyone has access)
 router.post('/register', auth.optional, (req, res, next) => {
-  const { body: { user } } = req;
 
-  if(!user.email) {
+  console.log(req.body);
+
+  if(!req.body.email) {
     return res.status(422).json({
       errors: {
         email: 'is required',
@@ -17,7 +18,7 @@ router.post('/register', auth.optional, (req, res, next) => {
     });
   }
 
-  if(!user.password) {
+  if(!req.body.password) {
     return res.status(422).json({
       errors: {
         password: 'is required',
@@ -25,9 +26,9 @@ router.post('/register', auth.optional, (req, res, next) => {
     });
   }
 
-  const finalUser = new Users(user);
+  const finalUser = new Users(req.body);
 
-  finalUser.setPassword(user.password);
+  finalUser.setPassword(req.body.password);
 
   return finalUser.save()
     .then(() => res.json({ user: finalUser.toAuthJSON() }));
