@@ -4,7 +4,6 @@ var ProductDetails = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
-    unique: true,
   },
   name: {
     type: String,

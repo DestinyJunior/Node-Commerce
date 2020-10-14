@@ -1,6 +1,4 @@
 var passport = require('passport');
-var config = require('../config/database');
-var jwt = require('jsonwebtoken');
 var express = require('express');
 
 // controllers
