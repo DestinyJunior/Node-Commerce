@@ -1,6 +1,6 @@
 # NodeJs Mini E-Product App
 
-Node.js e-commerce authentication app with crud products
+Node.js e-commerce authentication app with crud products (TEST for airtimeflip)
 
 ### Prerequisites
 
@@ -31,7 +31,3 @@ npm start
 - [Node.js](https://nodejs.org) - The backend framework used
 - [Express.js](https://github.com/expressjs/express) - Node.js framework used
 - [MongoDB](https://www.mongodb.com/) - Database platform used
-
-## Authors
-
-- **Sunday Destiny** - [mini-E-commerce](https://github.com/destinyjunior/node-commerce)
