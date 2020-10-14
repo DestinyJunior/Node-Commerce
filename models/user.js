@@ -2,40 +2,20 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt-nodejs');
 
 var UserSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    uppercase: true,
-    required: false,
-    trim: true,
-  },
-  lastName: {
-    type: String,
-    uppercase: true,
-    required: false,
+  name: {
+     type: String,
+    required: true,
     trim: true,
   },
   email: {
     type: String,
     unique: true,
-    required: false,
+    required: true,
     trim: true,
   },
   password: {
     type: String,
     required: true,
-  },
-  phoneNo: {
-    type: String,
-    unique: true,
-    required: false,
-  },
-  role: {
-    type: String,
-    required: true,
-  },
-  permission: {
-    type: Array,
-    required: false,
   },
   createdAt: {
     type: Date,

@@ -1,4 +1,7 @@
 var User = require("../models/user");
+var jwt = require('jsonwebtoken');
+var config = require('../config/database')
+
 
 class UserController {
   /**
@@ -8,20 +11,16 @@ class UserController {
    * @param {*} next
    */
   static createUser = (req, res, next) => { 
-    if (!req.body.password || !req.body.phoneNo) {
+    if (!req.body.password || !req.body.email) {
       return res.json({
         success: false,
-        message: "Please enter phone number and password to register.",
+        message: "Please enter email and password to register.",
       });
     } else {
       let newUser = new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
+        name: req.body.name,
         email: req.body.email,
-        password: req.body.password,
-        phoneNo: req.body.phoneNo,
-        role: req.body.role,
-        permission: req.body.permission,
+        password: req.body.password
       });
 
       //Attemt to save the new users
@@ -34,8 +33,6 @@ class UserController {
             error: err,
           });
         } else {
-          // create user wallet
-
           res.json({
             success: true,
             message: "User created.",
@@ -54,8 +51,7 @@ class UserController {
   static authenticate = (req, res) => {
     User.findOne(
       {
-        // email: req.body.email,
-        phoneNo: req.body.phoneNo,
+        email: req.body.email
       },
       function (err, user) {
         if (err) throw err;
@@ -63,7 +59,7 @@ class UserController {
         if (!user) {
           res.send({
             success: false,
-            message: "Email or number not Correct Check and try Again",
+            message: "Login failed",
           });
         } else {
           //Check if the password matches

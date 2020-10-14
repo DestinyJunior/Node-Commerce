@@ -1,7 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
-var jwt = require('jsonwebtoken');
+// var jwt = require('jsonwebtoken');
 var passport = require('passport');
 var config = require('./config/database');
 var mongoose = require('mongoose');
@@ -37,12 +37,12 @@ mongoose.connect(config.database, {
 require('./config/passport')(passport);
 
 // controllers
-var helloRouter = require('./router/hello');
+
 var userRouter = require('./router/user');
 var productRouter = require('./router/product');
 
 // routes prefix
-app.use('/', helloRouter);
+
 app.use('/api/user/', userRouter);
 app.use('/api/product', productRouter);
 

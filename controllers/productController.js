@@ -1,37 +1,30 @@
-var Bank = require("../models/product");
+var Product = require("../models/product");
 
-class BankController {
+class ProductController {
   /**
-   * Create new Bank
+   * Create new Product
    * @param {*} req  Request
    * @param {*} res Response
    * @param {*} next
    */
-  static createBankDetails = (req, res, next) => {
+  static createProduct = (req, res, next) => {
     // validate request
-    if (!req.body.name && req.body.accountNumber && req.body.bvn) {
+    if (!req.body.name && req.body.desc && req.body.price) {
       return res.json({
         success: false,
-        message: "provide name,  accountNumber,  bvn.",
+        message: "Provide Product,  Description,  Price.",
       });
     } else {
-      // Bank.findOne(
-      //   {
-      //     userId: req.user._id,
-      //   },
-      //   (err, bank) => {
-      //   }
-      // );
-      // save new bank details
-      let bankDetails = new Bank({
+      // save new product details
+      let productDetails = new Product({
         userId: req.user._id,
         name: req.body.name,
-        accountNumber: req.body.accountNumber,
-        bvn: req.body.bvn,
+        desc: req.body.desc,
+        price: req.body.price,
       });
 
-      // attempt to save new user bank details
-      Bank.create(bankDetails, (err, bank) => {
+      // attempt to save new product details
+      Product.create(productDetails, (err, product) => {
         if (err) {
           console.log(err);
           return res.json({
@@ -42,60 +35,12 @@ class BankController {
           return res.json({
             success: true,
             message: "created",
-            bank: bank,
+            product: product,
           });
         }
       });
     }
   };
 
-  /**
-   * get Bank by id
-   * @param {*} req Request
-   * @param {*} res Response
-   */
-  static getBankDetails = (req, res) => {
-    Bank.find()
-      .then((banks) => {
-        return res.json({
-          success: true,
-          message: "bank details found.",
-          banks: banks,
-        });
-      })
-      .catch((err) => {
-        return res.json({
-          success: false,
-          message: "Not Found.",
-          banks: null,
-          error: err,
-        });
-      });
-  };
-
-  /**
-   * get User Bank
-   * @param {*} req Request
-   * @param {*} res Response
-   */
-  static getUserBank = (req, res) => {
-    Bank.find({ userId: req.user._id })
-      .then((bank) => {
-        return res.json({
-          success: true,
-          message: "bank details found.",
-          bank: bank,
-        });
-      })
-      .catch((err) => {
-        return res.json({
-          success: false,
-          message: "Not Found.",
-          bank: null,
-          error: err,
-        });
-      });
-  };
 }
-
-module.exports = BankController;
+module.exports = ProductController;

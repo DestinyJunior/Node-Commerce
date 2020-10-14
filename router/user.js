@@ -4,7 +4,7 @@ var jwt = require('jsonwebtoken');
 var express = require('express');
 
 // controllers
-var userController = require('../controllers/user_controller');
+var userController = require('../controllers/userController');
 //Create API group routes
 var userRoute = express.Router();
 
@@ -18,8 +18,7 @@ userRoute.get(
   '/dashboard',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
-    res.send(
-      'Dashboard : ' + req.user._id + '. ' + req.user + ' ' + req.user.email
+    res.json({ 'user': req.user}     
     );
   }
 );

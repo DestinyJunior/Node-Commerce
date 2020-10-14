@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 
-var BankDetails = new mongoose.Schema({
+var ProductDetails = new mongoose.Schema({
   userId: {
     type: String,
     required: true,
@@ -31,4 +31,4 @@ var BankDetails = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Bank', BankDetails);
+module.exports = mongoose.model('Product', ProductDetails);

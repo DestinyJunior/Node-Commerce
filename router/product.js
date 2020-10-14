@@ -1,33 +1,18 @@
 var passport = require('passport');
-var config = require('../config/database');
-var jwt = require('jsonwebtoken');
 var express = require('express');
 
 // controllers
-var bankController = require('../controllers/bank_controller');
+var productController = require('../controllers/productController');
 
 // initialize api group
-var bankRequests = express.Router();
+var productRequests = express.Router();
 
-// non-protected routes
-
-// protected routes
-bankRequests.post(
+// create product
+productRequests.post(
   '/',
   passport.authenticate('jwt', { session: false }),
-  bankController.createBankDetails
+  productController.createProduct
 );
 
-bankRequests.get(
-  '/user-bank-detail',
-  passport.authenticate('jwt', { session: false }),
-  bankController.getUserBank
-);
 
-bankRequests.get(
-  '/user-bank-details',
-  passport.authenticate('jwt', { session: false }),
-  bankController.getBankDetails
-);
-
-module.exports = bankRequests;
+module.exports = productRequests;
