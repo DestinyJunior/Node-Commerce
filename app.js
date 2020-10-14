@@ -5,6 +5,8 @@ const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const errorHandler = require('errorhandler');
+var config = require('./config/database');
+
 
 //Configure mongoose's promise to global promise
 mongoose.promise = global.Promise;
@@ -20,6 +22,16 @@ app.use(cors());
 app.use(require('morgan')('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use(function(req, res, next) {
+  //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
+// files folder
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({ secret: 'passport-tutorial', cookie: { maxAge: 60000 }, resave: false, saveUninitialized: false }));
 
@@ -28,11 +40,13 @@ if(!isProduction) {
 }
 
 //Configure Mongoose
-mongoose.connect('mongodb://localhost/passport-tutorial');
+mongoose.connect(config.database);
 mongoose.set('debug', true);
 
 //Models & routes
 require('./models/Users');
+require('./models/Products');
+
 require('./config/passport');
 app.use(require('./routes'));
 
@@ -61,4 +75,4 @@ app.use((err, req, res) => {
   });
 });
 
-app.listen(8000, () => console.log('Server running on http://localhost:8000/'));
+app.listen(4000, () => console.log('Server running on http://localhost:4000/'));

@@ -5,8 +5,24 @@ const router = require('express').Router();
 const auth = require('../auth');
 const Users = mongoose.model('Users');
 
-//refister new user route (optional, everyone has access)
-router.post('/register', auth.optional, (req, res, next) => {
+
+
+//GET all product routes (required, only authenticated users have access)
+router.get('/', auth.required, (req, res, next) => {
+  const { payload: { id } } = req;
+
+  return Users.findById(id)
+    .then((user) => {
+      if(!user) {
+        return res.sendStatus(400);
+      }
+
+      return res.json({ user: user.toAuthJSON() });
+    });
+});
+
+//create new product route (optional, everyone has access)
+router.post('/create', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -33,8 +49,8 @@ router.post('/register', auth.optional, (req, res, next) => {
     .then(() => res.json({ user: finalUser.toAuthJSON() }));
 });
 
-//POST login route (optional, everyone has access)
-router.post('/login', auth.optional, (req, res, next) => {
+//update product route (optional, everyone has access)
+router.post('/update', auth.optional, (req, res, next) => {
   const { body: { user } } = req;
 
   if(!user.email) {
@@ -69,8 +85,28 @@ router.post('/login', auth.optional, (req, res, next) => {
   })(req, res, next);
 });
 
+
+//show a product routes (required, only authenticated users have access)
+router.get('/', auth.required, (req, res, next) => {
+  const { payload: { id } } = req;
+
+  return Users.findById(id)
+    .then((user) => {
+      if(!user) {
+        return res.sendStatus(400);
+      }
+
+      return res.json({ user: user.toAuthJSON() });
+    });
+});
+
+
+
+
+
+
 //GET current route (required, only authenticated users have access)
-router.get('/profile', auth.required, (req, res, next) => {
+router.get('/delete', auth.required, (req, res, next) => {
   const { payload: { id } } = req;
 
   return Users.findById(id)
